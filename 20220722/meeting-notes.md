@@ -31,7 +31,7 @@
 
     > Models are trained on N randomly selected tiles per WSI and tile-level predictions are averaged for each patient. Empirically, this can yield clinical-grade performance despite weak labels (Coudray and Tsirigos, 2020, Echle et al., 2020), even without any annotation (Kather et al., 2020, Muti et al., 2021). Three different AI models were used within this classical approach: ResNet, EfficientNet, and Vision Transformers (ViT).
 
-- MIL (multiple-instance learning) w/ or w/o attention-based aggregation functions
+- MIL (multiple-instance learning) w/ or w/o attention-based aggregation functions ([relevant youtube video](https://youtu.be/ZPe94q8wxPQ))
 
     > The conceptual limitations of the classical weakly-supervised computational pathology workflow are addressed by multiple instance learning (MIL). MIL groups all tiles from a given patient in “bags”. The label of individual tiles is unknown, but the label of the bag is positive if there is at least one positive instance within that bag. In theory, MIL is well suited to handle a heterogeneous set of tiles obtained from different regions in a WSI. In this study, we tested three different MIL methods: Classical MIL, Attention-based MIL (AttMIL), and Clustering constrained Attention MIL (CLAM).
 
