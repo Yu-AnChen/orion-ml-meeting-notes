@@ -23,7 +23,7 @@
 
 ### Review articles
 
-#### 1) 2022 - A comprehensive review of computer‑aided whole‑slide image analysis: from datasets to feature extraction, segmentation, classifcation and detection approaches https://doi.org/10.1007/s10462-021-10121-0
+#### 1) 2022 - Benchmarking weakly-supervised deep learning pipelines for whole slide classification in computational pathology https://doi.org/10.1016/j.media.2022.102474
 
 > In **classical weakly-supervised analysis pipelines**, all tiles inherit the slide label while in **multiple-instance learning (MIL)**, only bags of tiles inherit the label. However, it is still unclear how these widely used but markedly different approaches perform relative to each other
 
@@ -55,11 +55,11 @@
 ![](4.jpg)
 ![](5.jpg)
 
-2022 - Benchmarking weakly-supervised deep learning pipelines for whole slide classification in computational pathology https://doi.org/10.1016/j.media.2022.102474
-
+2022 - A comprehensive review of computer‑aided whole‑slide image analysis: from datasets to feature extraction, segmentation, classifcation and detection approaches https://doi.org/10.1007/s10462-021-10121-0
 
 2022 - One Model is All You Need: Multi-Task Learning Enables Simultaneous Histology Image Segmentation and Classification https://arxiv.org/pdf/2203.00077v1.pdf
 
+---
 
 ### Tools
 
