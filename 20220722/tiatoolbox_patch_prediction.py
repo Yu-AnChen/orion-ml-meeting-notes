@@ -5,6 +5,28 @@
 # workaround branch for in-house H&E images -
 # https://github.com/Yu-AnChen/tiatoolbox/tree/d5f00215a23e6896618b8469f7e1b28743d88554
 #
+
+"""
+To switch to the above workaround branch
+
+# clone the main repo
+git clone https://github.com/TissueImageAnalytics/tiatoolbox.git
+cd tiatoolbox/
+
+# add yu-anchen fork as a remote (with the name of "yu-anchen")
+git remote add yu-anchen https://github.com/Yu-AnChen/tiatoolbox.git
+
+# fetch the workaround branch
+git fetch yu-anchen custom-ome-tiff
+
+# create a local branch (named "custom-ome-tiff") that tracks
+# yu-anchen/custom-ome-tiff
+git checkout -b custom-ome-tiff yu-anchen/custom-ome-tiff
+
+# pip editable install
+pip install -e .
+"""
+
 import palom
 import tiatoolbox
 import numpy as np
