@@ -7,8 +7,8 @@ import pathlib
 import tqdm
 
 
-path_table = r"Z:\RareCyte-S3\YC-analysis\P37_CRCstudy_Round1\P37_S29-CRC01\quantification\ij_rb_100\ij_rb_100-P37_S29_A24_C59kX_E15@20220106_014304_946511_cellRingMask_morphology.csv"
-path_mask = r"Z:\RareCyte-S3\YC-analysis\P37_CRCstudy_Round1\P37_S29-CRC01\segmentation\P37_S29_A24_C59kX_E15@20220106_014304_946511\nucleiRingMask.tif"
+path_table = r"W:\crc-scans\C1-C40-sc-tables\P37_S29-CRC01\quantification\P37_S29_A24_C59kX_E15@20220106_014304_946511_cellRingMask_morphology.csv"
+path_mask = r"W:\crc-scans\C1-C40-segmentation-masks\P37_S29-CRC01\segmentation\P37_S29_A24_C59kX_E15@20220106_014304_946511\nucleiRingMask.tif"
 path_img_he = r"X:\crc-scans\histowiz scans\registered-orion\18459$LSP10353$US$SCAN$OR$001 _093059-registered.ome.tif"
 path_img_if = r"Z:\RareCyte-S3\P37_CRCstudy_Round1\P37_S29_A24_C59kX_E15@20220106_014304_946511.ome.tiff"
 path_qc_bad_ids = r"W:\crc-scans\C1-C40-cylinter\output2\noisy_roi_ids\noisy_roi_ids.csv"
