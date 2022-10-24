@@ -7,15 +7,18 @@ import pathlib
 import tqdm
 
 
-path_table = r"W:\crc-scans\C1-C40-sc-tables\P37_S29-CRC01\quantification\P37_S29_A24_C59kX_E15@20220106_014304_946511_cellRingMask_morphology.csv"
-path_mask = r"W:\crc-scans\C1-C40-segmentation-masks\P37_S29-CRC01\segmentation\P37_S29_A24_C59kX_E15@20220106_014304_946511\nucleiRingMask.tif"
-path_img_he = r"X:\crc-scans\histowiz scans\registered-orion\18459$LSP10353$US$SCAN$OR$001 _093059-registered.ome.tif"
-path_img_if = r"Z:\RareCyte-S3\P37_CRCstudy_Round1\P37_S29_A24_C59kX_E15@20220106_014304_946511.ome.tiff"
-path_qc_bad_ids = r"W:\crc-scans\C1-C40-cylinter\output2\noisy_roi_ids\noisy_roi_ids.csv"
-dir_output = r'W:\crc-scans\C1-C40-patches\CRC01'
+from file_vars import (
+    path_table,
+    path_mask,
+    path_img_he,
+    path_img_if,
+    path_qc_bad_ids,
+    dir_output,
+    PREFIX,
+    SAMPLE_ID
+)
 
 
-PREFIX = 'CRC01'
 SIZE = 224
 COLUMN = 'Pass QC'
 MIN_COUNTS = 30
@@ -33,7 +36,7 @@ out_dir = pathlib.Path(dir_output)
 
 # read single-cell table and select patches based on cosine similarity criteria
 df = pd.read_csv(path_table).set_index('CellID')
-df_qc = pd.read_csv(path_qc_bad_ids).query('Sample == 1')
+df_qc = pd.read_csv(path_qc_bad_ids).query(f"Sample == {SAMPLE_ID}")
 
 # add pass qc annotation to each row
 df['Pass QC'] = True
@@ -66,24 +69,26 @@ df_selected_sampled = (
 ).sample(N_PATCHES, random_state=10001)
 for r, c in tqdm.tqdm(df_selected_sampled[['row_s', 'col_s']].values, ascii=True):
     m  = mask[r:r+SIZE, c:c+SIZE]
-    tifffile.imsave(out_dir / 'mask' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
+    tifffile.imwrite(out_dir / 'mask' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
 
 # write IF patches
 orion = zarr.open(tifffile.imread(path_img_if, aszarr=True, level=0))
 for r, c in tqdm.tqdm(df_selected_sampled[['row_s', 'col_s']].values, ascii=True):
     m  = orion[:, r:r+SIZE, c:c+SIZE]
-    tifffile.imsave(out_dir / 'img_if' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
+    tifffile.imwrite(out_dir / 'img_if' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
 
 # write H&E patches
 he = zarr.open(tifffile.imread(path_img_he, aszarr=True, level=0))
 for r, c in tqdm.tqdm(df_selected_sampled[['row_s', 'col_s']].values, ascii=True):
     m  = he[:, r:r+SIZE, c:c+SIZE]
-    tifffile.imsave(out_dir / 'img_he' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
+    tifffile.imwrite(out_dir / 'img_he' / f"{PREFIX}-rs_{r}-cs_{c}.tif", m)
 
 
-# remove blurry image
+
+# remove blurry image and shifted image pairs
 import scipy.ndimage
 import skimage.restoration
+import skimage.registration
 # Pre-calculate the Laplacian operator kernel. We'll always be using 2D images.
 _laplace_kernel = skimage.restoration.uft.laplacian(2, (3, 3))[1]
 
@@ -95,6 +100,17 @@ def whiten(img, sigma):
         output = scipy.ndimage.gaussian_laplace(img, sigma)
     return output
 
+def register(img1, img2, sigma, upsample=1):
+    img1w = whiten(img1, sigma)
+    img2w = whiten(img2, sigma)
+    return skimage.registration.phase_cross_correlation(
+        img1w,
+        img2w,
+        upsample_factor=upsample,
+        normalization=None,
+        return_error=False,
+    )
+
 img_he_files = sorted(pathlib.Path(out_dir / 'img_he').glob('*.tif'))
 img_if_files = sorted(pathlib.Path(out_dir / 'img_if').glob('*.tif'))
 mask_files = sorted(pathlib.Path(out_dir / 'mask').glob('*.tif'))
@@ -104,7 +120,13 @@ assert len(img_he_files) == len(mask_files)
 
 for ih, ii, mp in tqdm.tqdm(zip(img_he_files, img_if_files, mask_files), ascii=True):
     img = tifffile.imread(ih)[1]
+    img2 = tifffile.imread(ii, key=0)
     if whiten(np.where(img == 0, img.max(), img), 0).var() < 1e-3:
+        ih.unlink()
+        ii.unlink()
+        mp.unlink()
+        continue
+    if np.linalg.norm(register(img, img2, 1)) > (1 / 0.325):
         ih.unlink()
         ii.unlink()
         mp.unlink()
